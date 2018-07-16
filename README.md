@@ -87,7 +87,7 @@ Usage of ./verificationGoogleCode:
 ### 手机下载google-authenticator客户端
 iphone手机和android手机都有对应的客户端，请大家自行下载
 
-![image](https://github.com/liyinda/security_exporter/blob/master/jpg/grafana.jpg)
+![image](https://github.com/liyinda/google-authenticator/blob/master/jpg/google-authenticator.jpg)
 
 
 ## 用户后台与google-authenticator对接
@@ -141,18 +141,18 @@ vi app/controllers/account_controller.rb
 
 ```
 
-![image](https://github.com/liyinda/security_exporter/blob/master/jpg/grafana.jpg)
+![image](https://github.com/liyinda/google-authenticator/blob/master/jpg/redmine.jpg)
 
 ### Zabbix
 vi include/views/general.login.php
 ``` shell 
 添加
-55                                         ->addItem([new CLabel(_('Password'), 'password'), (new CTextBox('password'))->setType('password')])
-56                                         ->addItem([
-57                                                 new CLabel(_('Google Code'), 'code'),
-58                                                 (new CTextBox('code'))->setAttribute('', ''),
-59                                                 $error
-60                                         ])
+55         ->addItem([new CLabel(_('Password'), 'password'), (new CTextBox('password'))->setType('password')])
+56         ->addItem([
+57                 new CLabel(_('Google Code'), 'code'),
+58                 (new CTextBox('code'))->setAttribute('', ''),
+59                 $error
+60         ])
 
 ```
 
@@ -173,7 +173,7 @@ vi index.php
 ```
 
 
-![image](https://github.com/liyinda/security_exporter/blob/master/jpg/grafana.jpg)
+![image](https://github.com/liyinda/google-authenticator/blob/master/jpg/zabbix.jpg)
 
 
 更多后台对接改造等您实现
