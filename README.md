@@ -1,84 +1,179 @@
-# security_exporter
+# google-authenticator
 
-Simple server that scrapes security stats and exports them via HTTP for Prometheus consumption
+Google authenticator是基于TOTP(Time-based One-time Password Algorithm)原理实现的双因子认证方案。通过
+一致算法保持手机端和服务端相同，并每30秒改变认证码。主要程序如下：
+createGoogleCode.go 用于创建用户二维码，用户手机Google authenticator会动态更新认证码
+verificationGoogleCode.go 服务端接口，用于验证用户后台认证是否一致。
 
-To support time related histogram metrics, Used to check hacker invason such as reverse Shell.
-
-基于Prometheus监控体系，对主机的安全性进行监控，探测主机是否存在反弹shell，多次ssh尝试登陆等迹象。
-
-## Table of Contents
-* [Dependency](#dependency)
-* [Download](#download)
-* [Compile](#compile)
+## 目录
+* [环境需要](#dependency)
+* [下载](#download)
+* [编译](#compile)
   * [build binary](#build-binary)
   * [build docker image](#build-docker-image)
-* [Run](#run)
+* [运行](#run)
   * [run binary](#run-binary)
   * [run docker image](#run-docker-image)
-* [Environment variables](#environment-variables)
-* [Metrics](#metrics)
-  * [Server main](#server-main)
-  * [Server zones](#server-zones)
-  * [Filter zones](#filter-zones)
+* [运行参数&google-authenticator手机端](#environment-variables)
+* [用户后台与google-authenticator对接](#metrics)
+  * [Redmine](#redmine)
+  * [Zabbix](#zabbix)
 
 
 
-## Dependency
+## 环境需要
 
-* [lsof](http://www.linuxfromscratch.org/blfs/view/svn/general/lsof.html)
-* [Prometheus](https://prometheus.io/)
+* [Redis](https://redis.io/)
 * [Golang 1.9.4](https://golang.org/)
 
 
-## Download
+## 下载
 
-Binary can be downloaded from [Releases](https://github.com/liyinda/secuity_exporter/releases) page.
+Binary can be downloaded from [Releases](https://github.com/liyinda/google-authenticator/releases) page.
 
-## Compile
+## 编译
 
 ### build binary
 
 ``` shell
-go build security_exporter.go
+go build createGoogleCode.go
+go build verificationGoogleCode.go
 ```
 ### build docker image
 ``` shell
 make docker
+DOCKER 部署方式作者会尽快补充
+docker pull 空:latest
 ```
 
-## Docker Hub Image
+## 运行
 ``` shell
-DOCKER 部署方式作者会尽快补充 
-docker pull 空:latest
+1）确保redis服务运行正常，并确保redis存储是持久化化配置。
+./redis-server /etc/redis/6379.conf
+
+2）生成用户秘钥和google-authenticator二维码
+mkdir jpg
+./createGoogleCode [用户名]
+
+3）运行认证接口服务端
+./verificationGoogleCode
+
+4）测试接口访问是否正常
+curl "http://127.0.0.1:8082/get?issuser=[用户名]&code=[google验证码]"
+如返回ok表示返回正常
+如返回error表示返回异常
 ```
 ### run docker
 ```
-docker run  -ti 镜像地址 bin/security_exporter
+DOCKER 部署方式作者会尽快补充
+docker pull 空:latest
 ```
 
-## Environment variables
+## 运行参数&google-authenticator手机端
 
-This image is configurable using different env variables
-
-## Metrics
-
-Documents about exposed Prometheus metrics.
-
-``` 
-# HELP fail_password_total Number of Fail Password in /var/log/secure.
-# TYPE fail_password_total counter
-fail_password_total{host="$hostname",zone="datacenter"} 3
-# HELP file_change_total Number of Change in /etc.
-# TYPE file_change_total counter
-file_change_total{host="$hostname",zone="datacenter"} 21
-# HELP reverse_shell_total Number of Reverse Shell.
-# TYPE reverse_shell_total counter
-reverse_shell_total{host="$hostname",zone="datacenter"} 0
+### 可根据自身环境更改运行参数
+``` shell
+./verificationGoogleCode -h
+Usage of ./verificationGoogleCode:
+  -http.address string
+        Address on HTTP Listen . (default ":8082")
+  -log string
+        Log file name (default "authenticator.log")
+  -redis.address string
+        Address on Redis Server . (default "127.0.0.1:6379")
 
 ```
 
-### Grafana
+### 手机下载google-authenticator客户端
+iphone手机和android手机都有对应的客户端，请大家自行下载
 
 ![image](https://github.com/liyinda/security_exporter/blob/master/jpg/grafana.jpg)
 
 
+## 用户后台与google-authenticator对接
+
+### Redmine
+vi app/views/account/login.html.erb
+``` shell 
+添加
+14 <tr>
+15     <td style="text-align:right;"><label for="code">Google验证码:</label></td>
+16     <td style="text-align:left;"><%= text_field_tag 'code', nil, :tabindex => '3' %></td>
+17 </tr>
+
+```
+
+vi app/controllers/account_controller.rb
+``` shell 
+添加
+1   require "open-uri"
+
+192   def password_authentication
+193 
+194     uri = 'http://[google-authenticator服务端地址]/get?issuser=' + params[:username] + '&code=' + params[:code]
+195     html_response = nil
+196     open(uri) do |http|
+197     html_response = http.read
+198     end
+199 
+200     if html_response == 'ok'
+201 
+202     user = User.try_to_login(params[:username], params[:password], false)
+203     if user.nil?
+204       invalid_credentials
+205     elsif user.new_record?
+206       onthefly_creation_failed(user, {:login => user.login, :auth_source_id => user.auth_source_id })
+207     else
+208       # Valid user
+209       if user.active?
+210         successful_authentication(user)
+211       else
+212         handle_inactive_user(user)
+213       end
+214     end
+215 
+216     else
+217         redirect_to(:action => 'login')
+218     end
+219 
+220 
+221   end
+
+```
+
+![image](https://github.com/liyinda/security_exporter/blob/master/jpg/grafana.jpg)
+
+### Zabbix
+vi include/views/general.login.php
+``` shell 
+添加
+55                                         ->addItem([new CLabel(_('Password'), 'password'), (new CTextBox('password'))->setType('password')])
+56                                         ->addItem([
+57                                                 new CLabel(_('Google Code'), 'code'),
+58                                                 (new CTextBox('code'))->setAttribute('', ''),
+59                                                 $error
+60                                         ])
+
+```
+
+vi index.php 
+``` shell 
+添加
+65 if (isset($_REQUEST['enter']) && $_REQUEST['enter'] == _('Sign in')) {
+66         // try to login
+67         $autoLogin = getRequest('autologin', 0);
+68         //print_r($_REQUEST);
+69         $authflag=file_get_contents("http://[google-authenticator服务端地址]/get?issuser=".getRequest('name', '')."&code=".getRequest('code', ''));
+70         //echo "http://[google-authenticator服务端地址]/get?issuser=".getRequest('name', '')."&code=".getRequest('code', '');
+71         if ($authflag=='ok'){}else{
+72             echo 'Google验证码错误'; header('Refresh: 2; url=http://zabbix.org/');exit;
+73         }
+74         //echo getRequest('code', '');
+
+```
+
+
+![image](https://github.com/liyinda/security_exporter/blob/master/jpg/grafana.jpg)
+
+
+更多后台对接改造等您实现
