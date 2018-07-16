@@ -6,22 +6,22 @@ createGoogleCode.go 用于创建用户二维码，用户手机Google authenticat
 verificationGoogleCode.go 服务端接口，用于验证用户后台认证是否一致。
 
 ## 目录
-* [环境需要](#dependency)
-* [下载](#download)
-* [编译](#compile)
+* [环境](#环境)
+* [下载](#下载)
+* [编译](#编译)
   * [build binary](#build-binary)
   * [build docker image](#build-docker-image)
-* [运行](#run)
+* [运行](#运行)
   * [run binary](#run-binary)
   * [run docker image](#run-docker-image)
-* [运行参数&google-authenticator手机端](#environment-variables)
-* [用户后台与google-authenticator对接](#metrics)
+* [运行参数&google-authenticator手机端](#运行参数&google-authenticator手机端)
+* [用户后台与google-authenticator对接](#户后台与google-authenticator对接)
   * [Redmine](#redmine)
   * [Zabbix](#zabbix)
 
 
 
-## 环境需要
+## 环境
 
 * [Redis](https://redis.io/)
 * [Golang 1.9.4](https://golang.org/)
