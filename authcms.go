@@ -18,9 +18,9 @@ import (
     //"github.com/gin-gonic/gin"
     "github.com/gin-gonic/contrib/sessions"
     "github.com/gin-contrib/cors"
-
     "github.com/liyinda/google-authenticator/api/router"
     //orm "github.com/liyinda/google-authenticator/api/database"
+    //"fmt"
 )
 
 func main() {
