@@ -32,8 +32,6 @@ func InitRouter() *gin.Engine {
         })
     })
 
-    //router.GET("/users", UserList)
-    //router.PUT("/user/:id", Update)
 
     //设置cookie
     router.GET("/cookie", func(c *gin.Context) {
