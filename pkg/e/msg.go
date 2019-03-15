@@ -32,6 +32,7 @@ var MsgFlags = map[int]string{
 	ERROR_UPLOAD_CHECK_IMAGE_FORMAT: "校验图片错误，图片格式或大小有问题",
 	ERROR_NOT_JSON: "格式错误，不是JSON格式",
 	ERROR_NOT_EXIST_USER: "用户不存在",
+	ERROR_AUTH_SESSION: "Session不存在",
 }
 
 func GetMsg(code int) string {

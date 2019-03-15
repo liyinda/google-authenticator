@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The AmrToMp3 Authors.
+Copyright 2019 The Google Authenticator Authors.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -16,7 +16,7 @@ package main
 
 import (
     //"github.com/gin-gonic/gin"
-    "github.com/gin-gonic/contrib/sessions"
+    //"github.com/gin-gonic/contrib/sessions"
     "github.com/gin-contrib/cors"
     "github.com/liyinda/google-authenticator/api/router"
     //orm "github.com/liyinda/google-authenticator/api/database"
@@ -26,19 +26,21 @@ import (
 func main() {
     router := router.InitRouter()
     //服务器session
-    store := sessions.NewCookieStore([]byte("secret"))
-    router.Use(sessions.Sessions("mysession", store))
+    //store := sessions.NewCookieStore([]byte("secret"))
+    //router.Use(sessions.Sessions("mysession", store))
 
     //容许跨域访问
     //vue-admin需要单独添加("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Token") 
     router.Use(cors.New(cors.Config{
-        AllowOrigins:     []string{"*"},
+        //AllowOrigins:     []string{"*"},
+        AllowOrigins:     []string{"http://101.200.42.56:8888"},
         AllowMethods:     []string{"PUT", "PATCH", "POST", "GET"},
         AllowHeaders:     []string{"Content-Type,Authorization,X-Token"},
         ExposeHeaders:    []string{"Content-Length"},
         AllowCredentials: true,
         AllowOriginFunc: func(origin string) bool {
-            return origin == "*"
+            //return origin == "*"
+            return origin == "http://101.200.42.56:8888"
         },
     }))
 

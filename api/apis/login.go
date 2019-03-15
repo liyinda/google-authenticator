@@ -48,6 +48,14 @@ func Login(c *gin.Context) {
 
     //比较用户POST提交的密码是否与数据库中密码一致
     if saltPassword == admin.Password {
+        //将username存储到session中
+        session := sessions.Default(c)
+	session.Set("user", json.Loginname)
+	err := session.Save()
+	if err != nil {
+            code = e.ERROR_AUTH_TOKEN
+	} 
+
         code = e.SUCCESS
         //获取用户token信息
         token, err := util.GenerateToken(json.Loginname, json.Password)
@@ -59,6 +67,7 @@ func Login(c *gin.Context) {
             "status": code,
             "token": token,
             "msg": e.GetMsg(code),
+            "user": json.Loginname,
         })
         return
     } else {
@@ -71,17 +80,44 @@ func Login(c *gin.Context) {
 
 }
 
+//用户登出
+func Logout(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get("user")
+	if user == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
+	} else {
+		//log.Println(user)
+		session.Delete("user")
+		session.Save()
+		c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
+	}
+}
 
 //用户信息
 func Userinfo(c *gin.Context) {
-    c.JSON(200, gin.H{
+    //获取session中的user信息
+    session := sessions.Default(c)
+    user := session.Get("user")
+    code := e.INVALID_PARAMS
+    if user == nil {
+        code = e.ERROR_AUTH_SESSION
+    } else {
+        code = e.SUCCESS
+
+    }
+    //获取GET中token参数
+    token := c.Request.URL.Query().Get("token")
+
+    c.JSON(http.StatusOK, gin.H{
+        "status": code,
+        "msg": e.GetMsg(code),
         "roles": "['admin']",
-        "name": "Super Admin",
+        "name": user,
         "introduction": "我是超级管理员",
-        "token": "admin",
+        "token": token,
         "avatar": "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
     })
-
 }
 
 //用户会话保持

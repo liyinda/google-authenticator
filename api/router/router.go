@@ -5,22 +5,45 @@ import (
     . "github.com/liyinda/google-authenticator/api/apis"
     "net/http"
     "fmt"
+    "github.com/liyinda/google-authenticator/middleware/jwt"
+    "github.com/gin-gonic/contrib/sessions"
+    "github.com/gin-contrib/cors"
 )
 
 func InitRouter() *gin.Engine {
     router := gin.Default()
+    //设置sessions
+    store := sessions.NewCookieStore([]byte("secret"))
+    router.Use(sessions.Sessions("mysession", store))
 
     //登录入口
     passport := router.Group("/passport")
     {
         passport.POST("/login", Login) 
-        //passport.GET("/userinfo", userinfo) 
     }
+    //passport.Use(AuthRequired())
+
+    passport.Use(cors.New(cors.Config{
+        //AllowOrigins:     []string{"*"},
+        AllowOrigins:     []string{"http://101.200.42.56:8888"},
+        AllowMethods:     []string{"PUT", "PATCH", "POST", "GET"},
+        AllowHeaders:     []string{"Content-Type,Authorization,X-Token"},
+        ExposeHeaders:    []string{"Content-Length"},
+        AllowCredentials: true,
+        AllowOriginFunc: func(origin string) bool {
+            //return origin == "*"
+            return origin == "http://101.200.42.56:8888"
+        },
+    }))
+
+
 
     //用户管理入口
     home := router.Group("/home")
+    home.Use(jwt.JWT())
     {
         home.GET("/userinfo", Userinfo) 
+        home.POST("/useradd", Useradd) 
     }
     home.Use(AuthRequired())
 

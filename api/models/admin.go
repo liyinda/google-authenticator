@@ -4,11 +4,16 @@ import (
     orm "github.com/liyinda/google-authenticator/api/database"
 )
 
+// 用户登录 from JSON
+type LoginJson struct {
+        Loginname     string `form:"loginname" json:"loginname" xml:"loginname"  binding:"required"`
+        Password string `form:"password" json:"password" xml:"password" binding:"required"`
+}
 
-//用户数据表
-type Authcms_user struct {
+//管理员数据表
+type Authcms_admin struct {
     ID       int64  `json:"id"`       // 列名为 `id`
-    User_name string `json:"user_name"` // 列名为 `login_name`
+    Login_name string `json:"login_name"` // 列名为 `login_name`
     Real_name string `json:"real_name"` // 列名为 `username`
     Password string `json:"password"` // 列名为 `password`
     Phone string `json:"phone"` // 列名为 `phone`
@@ -21,18 +26,14 @@ type Authcms_user struct {
     Update_id int64 `json:"update_id"` // 列名为 `update_id`
     Create_time int64 `json:"create_time"` // 列名为 `create_time`
     Update_time int64 `json:"update_time"` // 列名为 `update_time`
-    Qrcode string `json:"qrcode"` // 列名为 `update_time`
 }
 
-//创建新用户
-func (authcms_users *Authcms_user) Useradd() (id int64, err error) {
-    //添加数据
-    result := orm.Eloquent.Create(&authcms_users)
-    id = authcms_users.ID
-    if result.Error != nil {
-        err = result.Error
-        return
+//获取管理员密码
+func (authcms_admins *Authcms_admin) GetPassword(login_name string) (authcms_admin []Authcms_admin, err error) {
+    if err = orm.Eloquent.Model(&authcms_admin).Where("login_name=?",login_name).First(&authcms_admin).Error; err != nil {
+        return 
+
     }
-    return
-
+    return 
 }
+
