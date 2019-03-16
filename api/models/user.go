@@ -13,6 +13,7 @@ type Authcms_user struct {
     Password string `json:"password"` // 列名为 `password`
     Phone string `json:"phone"` // 列名为 `phone`
     Email string `json:"email"` // 列名为 `email`
+    Secretid string `json:"secretid"` // 列名为 `secretid`
     Salt string `json:"salt"` // 列名为 `salt`
     Last_login int64 `json:"last_login"`       // 列名为 `last_login`
     Last_ip string `json:"last_ip"` // 列名为 `last_ip`

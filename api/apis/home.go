@@ -7,7 +7,7 @@ import (
     "net/http"
     //"fmt"
     //"strings"
-    //"github.com/liyinda/google-authenticator/pkg/util"
+    "github.com/liyinda/google-authenticator/pkg/util"
     "github.com/liyinda/google-authenticator/pkg/e"
 )
 
@@ -36,7 +36,16 @@ func Useradd(c *gin.Context) {
     fmt.Println(json.Phone)
     fmt.Println(json.Qrcode)
     */
-    json.Qrcode = "text111"
+    //json.Qrcode = "text111"
+
+    //根据提交用户名称生成二维码秘钥和图片base64编码格式
+    //json.Secretid, json.Qrcode, err := util.CreateQrcode(json.User_name) 
+    secretid, qrcode, err := util.CreateQrcode(json.User_name)     
+    if err != nil {
+        code = e.ERROR
+    }
+    json.Secretid = secretid
+    json.Qrcode = qrcode
 
     id, err := json.Useradd()
     if err != nil {

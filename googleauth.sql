@@ -42,6 +42,7 @@ CREATE TABLE `authcms_user` (
   `password` char(32) NOT NULL DEFAULT '' COMMENT '密码',
   `phone` varchar(20) NOT NULL DEFAULT '0' COMMENT '手机号码',
   `email` varchar(50) NOT NULL DEFAULT '' COMMENT '邮箱',
+  `secretid` varchar(50) NOT NULL DEFAULT '' COMMENT '二维码秘钥',
   `salt` char(10) NOT NULL DEFAULT '' COMMENT '密码盐',
   `last_login` int(11) NOT NULL DEFAULT '0' COMMENT '最后登录时间',
   `last_ip` char(15) NOT NULL DEFAULT '' COMMENT '最后登录IP',

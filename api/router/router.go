@@ -12,6 +12,13 @@ import (
 
 func InitRouter() *gin.Engine {
     router := gin.Default()
+
+    //引用静态资源
+    router.LoadHTMLGlob("dist/*.html")
+    router.LoadHTMLFiles("static/*/*")
+    router.Static("/static", "./dist/static")
+    router.StaticFile("/vue/", "dist/index.html")
+
     //设置sessions
     store := sessions.NewCookieStore([]byte("secret"))
     router.Use(sessions.Sessions("mysession", store))
@@ -24,15 +31,15 @@ func InitRouter() *gin.Engine {
     //passport.Use(AuthRequired())
 
     passport.Use(cors.New(cors.Config{
-        //AllowOrigins:     []string{"*"},
-        AllowOrigins:     []string{"http://101.200.42.56:8888"},
+        AllowOrigins:     []string{"*"},
+        //AllowOrigins:     []string{"http://101.200.42.56:8888"},
         AllowMethods:     []string{"PUT", "PATCH", "POST", "GET"},
         AllowHeaders:     []string{"Content-Type,Authorization,X-Token"},
         ExposeHeaders:    []string{"Content-Length"},
         AllowCredentials: true,
         AllowOriginFunc: func(origin string) bool {
-            //return origin == "*"
-            return origin == "http://101.200.42.56:8888"
+            return origin == "*"
+            //return origin == "http://101.200.42.56:8888"
         },
     }))
 
