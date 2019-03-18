@@ -2,6 +2,7 @@ package models
 
 import (
     orm "github.com/liyinda/google-authenticator/api/database"
+    "fmt"
 )
 
 
@@ -37,3 +38,32 @@ func (authcms_users *Authcms_user) Useradd() (id int64, err error) {
     return
 
 }
+
+//更新用户信息
+func (authcms_users *Authcms_user) Useredit(id int64) (updateUser Authcms_user, err error) {
+    //更新数据
+    if err = orm.Eloquent.Select([]string{"id", "user_name"}).First(&updateUser, id).Error; err != nil {
+        return
+    }
+    //参数1:是要修改的数据
+    //参数2:是修改的数据
+    if err = orm.Eloquent.Model(&updateUser).Updates(&authcms_users).Error; err != nil {
+        return
+    }
+    return
+}
+
+//获取用户列表
+func (authcms_users *Authcms_user) Userlist(page int64, limit int64) (users []Authcms_user, err error) {
+    //查找数据
+    fmt.Println(&users)
+    //if page > 0 && limit > 0 {
+        //db := orm.Eloquent.Limt(limt).Offset((page - 1) * limit)
+    //}
+    if err = orm.Eloquent.Limit(limit).Offset((page - 1) * limit).Find(&users).Error; err != nil {
+        return
+    }
+    return
+}
+
+
