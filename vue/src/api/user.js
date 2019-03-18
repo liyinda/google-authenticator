@@ -8,3 +8,10 @@ export function getUserList(query) {
   })
 }
 
+export function updateUser(data) {
+  return request({
+    url: '/admin/update',
+    method: 'post',
+    data
+  })
+}
