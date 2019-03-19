@@ -51,8 +51,9 @@ CREATE TABLE `authcms_user` (
   `update_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '修改者ID',
   `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
-  `qrcode` text NOT NULL COMMENT '二维码图片',
-  PRIMARY KEY (`id`)
+  `qrcode` text NOT NULL COMMENT '二维码图片',  
+  PRIMARY KEY (`id`) 
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+ALTER TABLE `authcms_user` ADD UNIQUE(`user_name`);

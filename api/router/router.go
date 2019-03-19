@@ -27,19 +27,18 @@ func InitRouter() *gin.Engine {
     passport := router.Group("/passport")
     {
         passport.POST("/login", Login) 
+        passport.POST("/logout", Logout) 
     }
     //passport.Use(AuthRequired())
 
     passport.Use(cors.New(cors.Config{
         AllowOrigins:     []string{"*"},
-        //AllowOrigins:     []string{"http://101.200.42.56:8888"},
         AllowMethods:     []string{"PUT", "PATCH", "POST", "GET"},
         AllowHeaders:     []string{"Content-Type,Authorization,X-Token"},
         ExposeHeaders:    []string{"Content-Length"},
         AllowCredentials: true,
         AllowOriginFunc: func(origin string) bool {
             return origin == "*"
-            //return origin == "http://101.200.42.56:8888"
         },
     }))
 
@@ -51,6 +50,9 @@ func InitRouter() *gin.Engine {
     {
         home.GET("/userinfo", Userinfo) 
         home.POST("/useradd", Useradd) 
+        //home.POST("/useredit", Useredit) 
+        home.PUT("/useredit", Useredit) 
+        home.GET("/userlist", Userlist) 
     }
     home.Use(AuthRequired())
 
