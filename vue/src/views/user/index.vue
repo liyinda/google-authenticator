@@ -43,7 +43,7 @@
       <el-table-column align="center" label="Actions" width="280">
         <template slot-scope="scope">
           <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
-          <el-button type="primary" size="small" icon="el-icon-edit">GoogleCode</el-button>
+          <el-button type="primary" size="small" icon="el-icon-edit" @click="googleView(scope.row)">GoogleCode</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -69,14 +69,20 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">{{ $t('table.confirm') }}</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?addData():updateData()">{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="googledialogFormVisible">
+      <img :src="img_src" style="width:100%">
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="googledialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getUserList, updateUser } from '@/api/user'
+import { getUserList, updateUser, addUser, getGoogleCode } from '@/api/user'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import waves from '@/directive/waves' // Waves directive
 
@@ -122,6 +128,7 @@ export default {
         status: 'published'
       },
       dialogFormVisible: false,
+      googledialogFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
@@ -134,7 +141,8 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      googlepic: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
     }
   },
   created() {
@@ -160,12 +168,46 @@ export default {
         type: ''
       }
     },
+    googleView(row) {
+      this.resetTemp()
+      this.dialogStatus = 'qCode'
+      this.googledialogFormVisible = true
+      const tempData = Object.assign({}, row)
+      getGoogleCode(tempData.id).then(response => {
+        // this.googledialogFormVisible = false
+        this.img_src = response.data.message
+      })
+    },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
+      })
+    },
+    addData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.temp)
+          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          addUser(tempData).then(() => {
+            for (const v of this.list) {
+              if (v.id === this.temp.id) {
+                const index = this.list.indexOf(v)
+                this.list.splice(index, 1, this.temp)
+                break
+              }
+            }
+            this.dialogFormVisible = false
+            this.$notify({
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
       })
     },
     handleUpdate(row) {

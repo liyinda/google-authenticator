@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getUserList(query) {
   return request({
-    url: '/admin/list',
+    url: '/home/list',
     method: 'get',
     params: query
   })
@@ -10,8 +10,24 @@ export function getUserList(query) {
 
 export function updateUser(data) {
   return request({
-    url: '/admin/update',
+    url: '/home/edit',
     method: 'post',
     data
+  })
+}
+
+export function addUser(data) {
+  return request({
+    url: '/home/add',
+    method: 'post',
+    data
+  })
+}
+
+export function getGoogleCode(data) {
+  return request({
+    url: '/home/getgooglecode',
+    method: 'get',
+    params: { data }
   })
 }
