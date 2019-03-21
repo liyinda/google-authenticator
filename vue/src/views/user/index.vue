@@ -10,31 +10,31 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="LoginName">
+      <el-table-column align="center" label="userName">
         <template slot-scope="scope">
-          <span>{{ scope.row.login_name }}</span>
+          <span>{{ scope.row.user_name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="realName">
+      <el-table-column align="center" label="realName">
         <template slot-scope="scope">
           <span>{{ scope.row.real_name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="Phone">
+      <el-table-column align="center" label="Phone">
         <template slot-scope="scope">
           <span>{{ scope.row.phone }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="Email">
+      <el-table-column align="center" label="Email">
         <template slot-scope="scope">
           <span>{{ scope.row.email }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="180px" align="center" label="CreatTime">
+      <el-table-column align="center" label="CreatTime">
         <template slot-scope="scope">
           <span>{{ scope.row.create_time }}</span>
         </template>
@@ -50,9 +50,9 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="LoginName" prop="LoginName">
-          <el-input v-model="temp.login_name"/>
+      <el-form ref="dataForm" :rules="userRules" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="userName" prop="user_name">
+          <el-input v-model="temp.user_name"/>
         </el-form-item>
         <el-form-item label="realName" prop="realName">
           <el-input v-model="temp.real_name"/>
@@ -82,6 +82,7 @@
 </template>
 
 <script>
+import {} from '@/utils/validate'
 import { getUserList, updateUser, addUser, getGoogleCode } from '@/api/user'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import waves from '@/directive/waves' // Waves directive
@@ -101,6 +102,17 @@ export default {
     }
   },
   data() {
+    const validateRequire = (rule, value, callback) => {
+      if (value === '') {
+        this.$message({
+          message: rule.field + '为必传项',
+          type: 'error'
+        })
+        callback(new Error(rule.field + '为必传项'))
+      } else {
+        callback()
+      }
+    }
     return {
       tableKey: 0,
       list: null,
@@ -141,6 +153,9 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
+      userRules: {
+        user_name: [{ required: true, trigger: 'blur', validator: validateRequire }]
+      },
       downloadLoading: false,
       googlepic: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
     }
@@ -152,7 +167,7 @@ export default {
     getList() {
       this.listLoading = true
       getUserList(this.listQuery).then(response => {
-        this.list = response.data.items
+        this.list = response.data.users
         this.total = response.data.count
         this.listLoading = false
       })
@@ -174,8 +189,9 @@ export default {
       this.googledialogFormVisible = true
       const tempData = Object.assign({}, row)
       getGoogleCode(tempData.id).then(response => {
-        // this.googledialogFormVisible = false
-        this.img_src = response.data.message
+        this.googledialogFormVisible = false
+        this.img_src = tempData.qrcode
+        this.googledialogFormVisible = true
       })
     },
     handleCreate() {
@@ -190,7 +206,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          tempData.timestamp = +new Date(tempData.timestamp)
           addUser(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
