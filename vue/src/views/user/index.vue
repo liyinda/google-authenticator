@@ -42,8 +42,9 @@
 
       <el-table-column align="center" label="Actions" width="280">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)">Edit</el-button>
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="googleView(scope.row)">GoogleCode</el-button>
+          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleUpdate(scope.row)"></el-button>
+          <el-button type="primary" size="small" icon="eye-open" @click="googleView(scope.row)">Code</el-button>
+          <el-button type="primary" size="small" icon="el-icon-delete" @click="delUser(scope.row)"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -83,7 +84,7 @@
 
 <script>
 import {} from '@/utils/validate'
-import { getUserList, updateUser, addUser, getGoogleCode } from '@/api/user'
+import { getUserList, updateUser, addUser, getGoogleCode, delUser } from '@/api/user'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import waves from '@/directive/waves' // Waves directive
 
@@ -120,7 +121,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 10,
         importance: undefined,
         title: undefined,
         type: undefined,
@@ -192,6 +193,17 @@ export default {
         this.googledialogFormVisible = false
         this.img_src = tempData.qrcode
         this.googledialogFormVisible = true
+      })
+    },
+    delUser(row) {
+      const tempData = Object.assign({}, row)
+      delUser(tempData).then(response => {
+        this.$notify({
+          title: '成功',
+          message: '删除成功',
+          type: 'success',
+          duration: 2000
+        })
       })
     },
     handleCreate() {

@@ -24,6 +24,14 @@ export function addUser(data) {
   })
 }
 
+export function delUser(data) {
+  return request({
+    url: '/home/userdel',
+    method: 'delete',
+    data
+  })
+}
+
 export function getGoogleCode(data) {
   return request({
     url: '/home/userlist',
