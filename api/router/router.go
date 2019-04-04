@@ -13,6 +13,19 @@ import (
 func InitRouter() *gin.Engine {
     router := gin.Default()
 
+    router.Use(cors.New(cors.Config{
+        //AllowOrigins:     []string{"*"},
+        AllowOrigins:     []string{"http://192.168.30.18", "http://localhost"},
+        AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "OPTIONS", "DELETE"},
+        //AllowHeaders:     []string{"Content-Type,Authorization,X-Token,Access-Control-Allow-Origin"},
+        AllowHeaders:     []string{"Content-Type","Authorization","X-Token","Access-Control-Allow-Origin"},
+        ExposeHeaders:    []string{"Content-Length"},
+        AllowCredentials: true,
+        AllowOriginFunc: func(origin string) bool {
+            return origin == "*"
+        },
+    }))
+
     //引用静态资源
     router.LoadHTMLGlob("dist/*.html")
     router.LoadHTMLFiles("static/*/*")
@@ -29,20 +42,6 @@ func InitRouter() *gin.Engine {
         passport.POST("/login", Login) 
         passport.POST("/logout", Logout) 
     }
-    //passport.Use(AuthRequired())
-
-    passport.Use(cors.New(cors.Config{
-        AllowOrigins:     []string{"*"},
-        AllowMethods:     []string{"PUT", "PATCH", "POST", "GET"},
-        AllowHeaders:     []string{"Content-Type,Authorization,X-Token"},
-        ExposeHeaders:    []string{"Content-Length"},
-        AllowCredentials: true,
-        AllowOriginFunc: func(origin string) bool {
-            return origin == "*"
-        },
-    }))
-
-
 
     //用户管理入口
     home := router.Group("/home")
@@ -53,6 +52,7 @@ func InitRouter() *gin.Engine {
         //home.POST("/useredit", Useredit) 
         home.PUT("/useredit", Useredit) 
         home.GET("/userlist", Userlist) 
+        home.DELETE("/userdel", Userdel) 
     }
     home.Use(AuthRequired())
 
@@ -63,6 +63,12 @@ func InitRouter() *gin.Engine {
             "error":  "404, page not exists!",
         })
     })
+
+    //接口管理入口
+    api := router.Group("/api")
+    {
+        api.GET("/apiqrcode", ApiQrcode)
+    }
 
 
     //设置cookie
@@ -80,3 +86,4 @@ func InitRouter() *gin.Engine {
 
     return router
 }
+

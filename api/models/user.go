@@ -66,4 +66,37 @@ func (authcms_users *Authcms_user) Userlist(page int64, limit int64) (users []Au
     return
 }
 
+//获取用户总数
+func (authcms_users *Authcms_user) Usercount() (count int64, err error) {
+    result := orm.Eloquent.Model(&authcms_users).Where(&authcms_users).Count(&count)
+    if result.Error != nil {
+        err = result.Error
+        return
+    }
+    return
+}
 
+//删除用户
+func (authcms_users *Authcms_user) Userdel(id int64) (result Authcms_user, err error) {
+    if err = orm.Eloquent.Select([]string{"id"}).First(&authcms_users, id).Error; err != nil {
+        return
+    }
+
+    if err = orm.Eloquent.Delete(&authcms_users).Error; err != nil {
+        return
+    }
+
+    result = *authcms_users
+    return
+}
+
+//查找用户信息
+func (authcms_users *Authcms_user) Usersearch(username string) (searchUser Authcms_user, err error) {
+    //查找数据
+    //if err = orm.Eloquent.Select([]string{"user_name"}).First(&authcms_users, username).Error; err != nil {
+    if err = orm.Eloquent.Where("user_name = ?", username).Find(&authcms_users).Error; err != nil {
+        return
+    }
+    searchUser = *authcms_users
+    return
+}

@@ -17,10 +17,9 @@ package main
 import (
     //"github.com/gin-gonic/gin"
     //"github.com/gin-gonic/contrib/sessions"
-    "github.com/gin-contrib/cors"
+    //"github.com/gin-contrib/cors"
     "github.com/liyinda/google-authenticator/api/router"
     //orm "github.com/liyinda/google-authenticator/api/database"
-    //"fmt"
 )
 
 func main() {
@@ -31,18 +30,21 @@ func main() {
 
     //容许跨域访问
     //vue-admin需要单独添加("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Token") 
-    router.Use(cors.New(cors.Config{
-        //AllowOrigins:     []string{"*"},
-        AllowOrigins:     []string{"http://101.200.42.56:8888"},
-        AllowMethods:     []string{"PUT", "PATCH", "POST", "GET"},
-        AllowHeaders:     []string{"Content-Type,Authorization,X-Token"},
-        ExposeHeaders:    []string{"Content-Length"},
-        AllowCredentials: true,
-        AllowOriginFunc: func(origin string) bool {
-            //return origin == "*"
-            return origin == "http://101.200.42.56:8888"
-        },
-    }))
+    //router.Use(Cors())
+//    router.Use(cors.New(cors.Config{
+//        AllowOrigins:     []string{"http://192.168.30.18"},
+//        AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "OPTIONS"},
+//        AllowHeaders:     []string{"XMLHttpRequest","Content-Type","Authorization","X-Token","Origin","Access-Control-Allow-Origin",},
+//        //AllowHeaders:     []string{"XMLHttpRequest,Content-Type,Authorization,X-Token,Origin,Access-Control-Allow-Origin"},
+//        ExposeHeaders:    []string{"Content-Length"},
+//        AllowCredentials: true,
+//        AllowOriginFunc: func(origin string) bool {
+//            return true
+//            //return origin == "http://192.168.30.18"
+//            //return origin == "http://101.200.42.56:8888"
+//        },
+//    }))
 
     router.Run(":8888")
 }
+

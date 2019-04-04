@@ -104,6 +104,7 @@ func Useredit(c *gin.Context) {
         "name": user,
         "token": token,
         "id": json.ID,
+        "qrcode": json.Qrcode,
     })
 }
 
@@ -126,7 +127,7 @@ func Userlist(c *gin.Context) {
         code = e.ERROR_NOT_JSON
     }
     //获取url中token, page, limit
-    token := c.Request.URL.Query().Get("token")
+    //token := c.Request.URL.Query().Get("token")
     page := c.Request.URL.Query().Get("page")
     limit := c.Request.URL.Query().Get("limit")
 
@@ -141,6 +142,53 @@ func Userlist(c *gin.Context) {
     } else {
         code = e.SUCCESS
     }
+    //获取总用户数量
+    count, err := json.Usercount()
+    if err != nil{
+        code = e.ERROR
+    } else {
+        code = e.SUCCESS
+    }
+
+    c.JSON(http.StatusOK, gin.H{
+        "status": code,
+        "msg": e.GetMsg(code),
+        "name": user,
+        //"token": token,
+        "id": json.ID,
+        "users": result,
+        "count": count,
+    })
+}
+
+//删除用户信息
+func Userdel(c *gin.Context) {
+    //获取session中的user信息
+    session := sessions.Default(c)
+    user := session.Get("user")
+    code := e.INVALID_PARAMS
+    if user == nil {
+        code = e.ERROR_AUTH_SESSION
+    } else {
+        code = e.SUCCESS
+
+    }
+    //获取POST中json参数
+    var json models.Authcms_user
+
+    if err := c.ShouldBindJSON(&json); err != nil {
+        code = e.ERROR_NOT_JSON
+    }
+
+    //删除用户信息
+    result, err := json.Userdel(json.ID)
+    if err != nil || result.ID == 0 {
+        code = e.ERROR
+    } else {
+        code = e.SUCCESS
+    }
+
+    token := c.Request.URL.Query().Get("token")
 
     c.JSON(http.StatusOK, gin.H{
         "status": code,
@@ -148,7 +196,6 @@ func Userlist(c *gin.Context) {
         "name": user,
         "token": token,
         "id": json.ID,
-        "users": result,
     })
-}
 
+}

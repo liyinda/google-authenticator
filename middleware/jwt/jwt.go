@@ -16,7 +16,11 @@ func JWT() gin.HandlerFunc {
 		var data interface{}
 
 		code = e.SUCCESS
-		token := c.Query("token")
+		//token := c.Query("token")
+                //vue-admin 需要通过HTTP HEADER中取到X-Token代替之前的从url参数
+	        xtoken := c.Request.Header["X-Token"]
+                token := xtoken[0]
+
 		if token == "" {
 			code = e.INVALID_PARAMS
 		} else {
