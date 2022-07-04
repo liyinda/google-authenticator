@@ -3,7 +3,7 @@ package home
 import (
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/liyinda/google-authenticator/store/postgres"
+	"github.com/liyinda/google-authenticator/store/sqlite"
 	"github.com/liyinda/google-authenticator/utils/errno"
 	"github.com/liyinda/google-authenticator/utils/handler"
 	"github.com/liyinda/google-authenticator/utils/qrcode"
@@ -45,7 +45,7 @@ func Userinfo(c *gin.Context) {
 }
 
 func AuthUserCreate(c *gin.Context) {
-	var authuser postgres.Authuser
+	var authuser sqlite.Authuser
 	//将request的body中的数据，自动按照json格式解析到结构体。
 	if err := c.ShouldBindJSON(&authuser); err != nil {
 		handler.SendResponse(c, errno.ErrStruct, nil)
@@ -53,7 +53,7 @@ func AuthUserCreate(c *gin.Context) {
 	}
 
 	//判断项目名称是否相同，在相同的环境和命名空间下
-	count, _ := postgres.CountAuthUserByName(authuser.Name)
+	count, _ := sqlite.CountAuthUserByName(authuser.Name)
 	if count > 0 {
 		handler.SendResponse(c, errno.ErrProjectCreate, "error, use the same authuser name.")
 		return
@@ -66,7 +66,7 @@ func AuthUserCreate(c *gin.Context) {
 		return
 	}
 
-	err = postgres.CreateAuthUser(authuser)
+	err = sqlite.CreateAuthUser(authuser)
 	if err != nil {
 		handler.SendResponse(c, errno.ErrProjectCreate, nil)
 		return
@@ -82,7 +82,7 @@ func AuthUserList(c *gin.Context) {
 		handler.SendResponse(c, errno.ErrToken, "error, session is nil")
 	}
 
-	aus, err := postgres.ListAuthUser()
+	aus, err := sqlite.ListAuthUser()
 	if err != nil {
 		handler.SendResponse(c, errno.ErrQuery, "error, list auth user!")
 		return
@@ -108,7 +108,7 @@ func GetQrcode(c *gin.Context) {
 	id, _ := c.GetQuery("id")
 	codeId, _ := strconv.Atoi(id)
 
-	au, err := postgres.GetQrcode(codeId)
+	au, err := sqlite.GetQrcode(codeId)
 	if err != nil {
 		handler.SendResponse(c, errno.ErrQuery, "error, list auth user!")
 		return

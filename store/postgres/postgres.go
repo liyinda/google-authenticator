@@ -32,7 +32,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	falarmcenter, err := os.Create("alarmcenterengine.log")
+	falarmcenter, err := os.Create("authenticator.log")
 	if err != nil {
 		println(err.Error())
 		return
@@ -42,5 +42,5 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("connect postgresql alarm-center success")
+	log.Println("connect postgresql google-authenticator success")
 }

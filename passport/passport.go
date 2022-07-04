@@ -23,7 +23,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if user.Username == "admin" && user.Password == "" {
+	if user.Username == "admin" && user.Password == "111111" {
 		//将username存储到session中
 		session := sessions.Default(c)
 		session.Set("user", user.Username)

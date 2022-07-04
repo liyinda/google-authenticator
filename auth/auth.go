@@ -3,7 +3,7 @@ package auth
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/liyinda/google-authenticator/store/postgres"
+	"github.com/liyinda/google-authenticator/store/sqlite"
 	"github.com/liyinda/google-authenticator/utils/qrcode"
 	"log"
 	"net/http"
@@ -18,7 +18,7 @@ func ApiQrcode(c *gin.Context) {
 
 	var flag string
 	//查询用户信息
-	result, err := postgres.SearchUsername(issuser)
+	result, err := sqlite.SearchUsername(issuser)
 	log.Printf("result.Secretid", result)
 	if err == nil {
 		flag = "no user"
