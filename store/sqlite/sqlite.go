@@ -45,6 +45,7 @@ func createTable() {
 	CREATE TABLE IF NOT EXISTS authuser(
 	id integer PRIMARY KEY autoincrement,
 	name varchar NOT NULL,
+	description varchar NULL,
 	dr int4 NOT NULL DEFAULT 0,
 	secretid varchar NULL,
 	qrcode varchar NOT NULL,

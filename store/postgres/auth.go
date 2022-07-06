@@ -8,6 +8,7 @@ import (
 type Authuser struct {
 	ID          int    `xorm:"id int pk autoincr"`
 	Name        string `xorm:"name"`
+	Description string `xorm:"description"`
 	Dr          int    `xorm:"dr"`
 	Secretid    string `xorm:"secretid"`
 	Qrcode      string `xorm:"qrcode"`
