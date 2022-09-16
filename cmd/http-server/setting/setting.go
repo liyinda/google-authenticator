@@ -13,7 +13,14 @@ type Server struct {
 	WriteTimeout time.Duration
 }
 
+type Auth struct {
+	Username  string
+	Password  string
+}
+
 var ServerSetting = &Server{}
+
+var AuthSetting = &Auth{}
 
 var cfg *ini.File
 
@@ -24,7 +31,7 @@ func Setup() {
 		log.Fatalf("setting.Setup, fail to parse 'conf/app.ini': %v", err)
 	}
 
-	//mapTo("app", AppSetting)
+	mapTo("auth", AuthSetting)
 	mapTo("server", ServerSetting)
 	//mapTo("database", DatabaseSetting)
 	//mapTo("redis", RedisSetting)

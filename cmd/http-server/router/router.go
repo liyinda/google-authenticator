@@ -24,7 +24,7 @@ func InitRouter() *gin.Engine {
 		AllowHeaders:     []string{"Content-Length", "Content-Type", "X-Token", "Access-Control-Allow-Origin"},
 		AllowCredentials: true,
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowOrigins:     []string{"http://127.0.0.1:7000"},
+		AllowOrigins:     []string{"http://localhost:7000"},
 	}))
 
 	//引用静态资源

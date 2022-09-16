@@ -3,6 +3,7 @@ package passport
 import (
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/liyinda/google-authenticator/cmd/http-server/setting"
 	"github.com/liyinda/google-authenticator/utils/errno"
 	"github.com/liyinda/google-authenticator/utils/handler"
 	"github.com/liyinda/google-authenticator/utils/jwt"
@@ -23,7 +24,11 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if user.Username == "admin" && user.Password == "111111" {
+	setting.Setup()
+	username := setting.AuthSetting.Username
+	password := setting.AuthSetting.Password
+
+	if user.Username == username && user.Password == password {
 		//将username存储到session中
 		session := sessions.Default(c)
 		session.Set("user", user.Username)
