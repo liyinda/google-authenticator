@@ -24,12 +24,12 @@ func InitRouter() *gin.Engine {
 		AllowHeaders:     []string{"Content-Length", "Content-Type", "X-Token", "Access-Control-Allow-Origin"},
 		AllowCredentials: true,
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowOrigins:     []string{"http://127.0.0.1:7000"},
+		AllowOrigins:     []string{"http://localhost:7000"},
 	}))
 
 	//引用静态资源
 	r.LoadHTMLGlob("dist/*.html")
-	r.LoadHTMLFiles("static/*/*")
+	//r.LoadHTMLFiles("static/*/*")
 	r.Static("/static", "./dist/static")
 	r.StaticFile("/vue/", "dist/index.html")
 
