@@ -29,7 +29,7 @@ func InitRouter() *gin.Engine {
 
 	//引用静态资源
 	r.LoadHTMLGlob("dist/*.html")
-	r.LoadHTMLFiles("static/*/*")
+	//r.LoadHTMLFiles("static/*/*")
 	r.Static("/static", "./dist/static")
 	r.StaticFile("/vue/", "dist/index.html")
 
