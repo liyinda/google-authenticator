@@ -119,3 +119,28 @@ func GetQrcode(c *gin.Context) {
 	})
 
 }
+
+func AuthUserDelete(c *gin.Context) {
+	//获取session中的user信息
+	session := sessions.Default(c)
+	user := session.Get("user")
+	if user == nil {
+		handler.SendResponse(c, errno.ErrToken, "error, session is nil")
+	}
+
+	id, _ := c.GetQuery("id")
+	codeId, _ := strconv.Atoi(id)
+
+	err := sqlite.DeleteAuthUser(codeId)
+	if err != nil {
+		handler.SendResponse(c, errno.ErrQuery, "error, list auth user!")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": errno.SUCCESS,
+		"data": gin.H{
+			"status": "success",
+		},
+	})
+
+}

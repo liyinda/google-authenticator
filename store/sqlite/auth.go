@@ -60,3 +60,13 @@ func SearchUsername(name string) (au Authuser, err error) {
 	}
 	return au, nil
 }
+
+func DeleteAuthUser(id int) (err error) {
+	var au Authuser
+	_, err = authEngine.Table("authuser").ID(id).Delete(&au)
+	if err != nil {
+		log.Println("cannot delete auth user , error: ", err)
+		return err
+	}
+	return nil
+}
